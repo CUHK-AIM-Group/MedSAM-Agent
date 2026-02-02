@@ -2,7 +2,7 @@
 # MedSAM-Agent: Empowering Interactive Medical Image Segmentation with Multi-turn Agentic Reinforcement Learning
 [🤖 **Model**](https://huggingface.co/Saint-lsy/MedSAM-Agent-Qwen3-VL-8B-MedSAM2) | [**🤗 Dataset**](#) | [**📖 Paper**](#)
 <p align="center">
-  <img src="./assets/logo.jpg" alt="" width="120" height="140">
+  <img src="./assets/logo.png" alt="" width="120" height="140">
 </p>
 Shengyuan Liu<sup>1</sup> &emsp; Liuxin Bao<sup>1</sup> &emsp;
 Qi Yang<sup>2,3</sup> &emsp; Wanting Geng<sup>2,4</sup> &emsp;
