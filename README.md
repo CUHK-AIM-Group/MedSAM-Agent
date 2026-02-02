@@ -16,13 +16,12 @@ Yixuan Yuan<sup>1✉</sup>
 
 ## 🚀Overview
 In this work, we propose MedSAM-Agent, a framework that reformulates interactive segmentation as a multi-step autonomous decision-making process. First, we introduce a hybrid prompting strategy for expert-curated trajectory generation, enabling the model to internalize human-like decision heuristics and adaptive refinement strategies. Furthermore, we develop a two-stage training pipeline that integrates multi-turn, end-to-end outcome verification with a clinical-fidelity process reward design to promote interaction parsimony and decision efficiency. 
-
 ![Main](assets/main.gif)
 
 ### ✨ Todo List
-- [] Release the SFT and RL dataset for MedSAM-Agent.
-- [] Release the code of trajectory generation.
-- [x] Release the paper, model and base code for MedSAM-Agent.
+- [ ] Release the SFT and RL dataset for MedSAM-Agent.
+- [ ] Release the code of trajectory generation.
+- [x] Release the paper, model and the base code for MedSAM-Agent.
 
 ## Environment Setup
 * We use python 3.11/CUDA 12.9/torch 2.8.0 for implementation.
