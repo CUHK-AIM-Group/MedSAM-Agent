@@ -1,0 +1,5 @@
+# Agent Loop Configuration for MedSAM Iterative Refinement
+# Registers the medsam_iterative_agent loop with proper prompt management
+
+- name: medsam_iterative_agent
+  _target_: recipe.medsam_agent.medsam_iterative_agent_loop.MedSAMIterativeAgentLoop

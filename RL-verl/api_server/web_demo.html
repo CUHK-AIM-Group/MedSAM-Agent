@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMISNet Web Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .upload-section {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-section:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+
+        .upload-section.dragover {
+            border-color: #667eea;
+            background: #e8e8ff;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .prompt-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .prompt-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .prompt-box h3 {
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 5px;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .result-section {
+            margin-top: 30px;
+        }
+
+        .image-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .image-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .image-box img {
+            max-width: 100%;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .image-box canvas {
+            max-width: 100%;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            cursor: crosshair;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .button-group {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .category-badge {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            display: inline-block;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 IMISNet Web Demo</h1>
+        <p class="subtitle">Medical image interactive segmentation demo</p>
+
+        <!-- Upload area -->
+        <div class="upload-section" id="uploadSection" onclick="document.getElementById('fileInput').click()">
+            <div id="uploadText">
+                <h2>📁 Select or drag an image file</h2>
+                <p>Supports PNG, JPG, JPEG formats</p>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
+        </div>
+
+        <!-- Original image display -->
+        <div id="originalImageSection" style="display: none;">
+            <h3>Original image (click to add points)</h3>
+            <div class="image-box">
+                <canvas id="imageCanvas"></canvas>
+                <div id="pointsList"></div>
+            </div>
+        </div>
+
+        <!-- Interaction options -->
+        <div class="prompt-section" id="promptSection" style="display: none;">
+            <div class="prompt-box">
+                <h3>📍 Click interaction</h3>
+                <p>Click on the image to add points</p>
+                <p>Left click = foreground (green), right click = background (red)</p>
+                <button onclick="clearPoints()">Clear all points</button>
+            </div>
+
+            <div class="prompt-box">
+                <h3>📦 Bounding box</h3>
+                <input type="number" id="bboxX1" placeholder="X1">
+                <input type="number" id="bboxY1" placeholder="Y1">
+                <input type="number" id="bboxX2" placeholder="X2">
+                <input type="number" id="bboxY2" placeholder="Y2">
+            </div>
+
+            <div class="prompt-box">
+                <h3>📝 Text prompt</h3>
+                <input type="text" id="textPrompt" placeholder="e.g., kidney_right">
+                <p style="font-size: 12px; margin-top: 10px;">
+                    Examples: kidney_left, kidney_right, liver, spleen, lung_left, lung_right
+                </p>
+            </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="button-group" id="buttonGroup" style="display: none;">
+            <button onclick="predict()" id="predictBtn">🚀 Run prediction</button>
+            <button onclick="reset()">🔄 Reset</button>
+        </div>
+
+        <!-- Status -->
+        <div id="statusDiv"></div>
+
+        <!-- Results -->
+        <div class="result-section" id="resultSection" style="display: none;">
+            <h2>Prediction results</h2>
+            <div id="categoryResults"></div>
+            <div class="image-container" id="resultImages"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        let currentImage = null;
+        let imageFile = null;
+        let points = [];
+        let canvas = null;
+        let ctx = null;
+
+        // Drag and drop upload
+        const uploadSection = document.getElementById('uploadSection');
+        uploadSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadSection.classList.add('dragover');
+        });
+        uploadSection.addEventListener('dragleave', () => {
+            uploadSection.classList.remove('dragover');
+        });
+        uploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showStatus('Please select an image file!', 'error');
+                return;
+            }
+
+            imageFile = file;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentImage = new Image();
+                currentImage.onload = function() {
+                    displayImage();
+                    document.getElementById('originalImageSection').style.display = 'block';
+                    document.getElementById('promptSection').style.display = 'grid';
+                    document.getElementById('buttonGroup').style.display = 'block';
+                    showStatus('Image loaded successfully! Please choose an interaction method', 'success');
+                };
+                currentImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function displayImage() {
+            canvas = document.getElementById('imageCanvas');
+            ctx = canvas.getContext('2d');
+            
+            const maxWidth = 600;
+            const scale = Math.min(1, maxWidth / currentImage.width);
+            canvas.width = currentImage.width * scale;
+            canvas.height = currentImage.height * scale;
+            
+            ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+            
+            // Add click event
+            canvas.onclick = addPoint;
+            canvas.oncontextmenu = function(e) {
+                e.preventDefault();
+                addPoint(e, 0);
+                return false;
+            };
+        }
+
+        function addPoint(event, label = 1) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = currentImage.width / canvas.width;
+            const scaleY = currentImage.height / canvas.height;
+            
+            const x = Math.round((event.clientX - rect.left) * scaleX);
+            const y = Math.round((event.clientY - rect.top) * scaleY);
+            
+            points.push({x, y, label});
+            redrawCanvas();
+            updatePointsList();
+        }
+
+        function clearPoints() {
+            points = [];
+            redrawCanvas();
+            updatePointsList();
+        }
+
+        function redrawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+            
+            const scaleX = canvas.width / currentImage.width;
+            const scaleY = canvas.height / currentImage.height;
+            
+            points.forEach(point => {
+                const x = point.x * scaleX;
+                const y = point.y * scaleY;
+                const color = point.label === 1 ? '#00ff00' : '#ff0000';
+                
+                ctx.fillStyle = color;
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+            });
+        }
+
+        function updatePointsList() {
+            const listDiv = document.getElementById('pointsList');
+            if (points.length === 0) {
+                listDiv.innerHTML = '';
+                return;
+            }
+            listDiv.innerHTML = '<p>Points added: ' + points.length + '</p>';
+        }
+
+        async function predict() {
+            if (!imageFile) {
+                showStatus('Please select an image first!', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', imageFile);
+
+            let hasPrompt = false;
+
+            // Add points
+            if (points.length > 0) {
+                const coords = points.map(p => [p.x, p.y]);
+                const labels = points.map(p => p.label);
+                formData.append('point_coords', JSON.stringify(coords));
+                formData.append('point_labels', JSON.stringify(labels));
+                hasPrompt = true;
+            }
+
+            // Add bounding box
+            const x1 = document.getElementById('bboxX1').value;
+            const y1 = document.getElementById('bboxY1').value;
+            const x2 = document.getElementById('bboxX2').value;
+            const y2 = document.getElementById('bboxY2').value;
+            if (x1 && y1 && x2 && y2) {
+                formData.append('bbox', JSON.stringify([parseInt(x1), parseInt(y1), parseInt(x2), parseInt(y2)]));
+                hasPrompt = true;
+            }
+
+            // Add text
+            const textPrompt = document.getElementById('textPrompt').value.trim();
+            if (textPrompt) {
+                formData.append('text', JSON.stringify([textPrompt]));
+                hasPrompt = true;
+            }
+
+            if (!hasPrompt) {
+                showStatus('Please provide at least one interaction method (points, box, or text)!', 'error');
+                return;
+            }
+
+            formData.append('multimask_output', 'false');
+
+            document.getElementById('predictBtn').disabled = true;
+            showStatus('Predicting...', 'info');
+
+            try {
+                const response = await fetch(`${API_URL}/predict`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                displayResults(result);
+                showStatus('Prediction succeeded!', 'success');
+            } catch (error) {
+                showStatus(`Prediction failed: ${error.message}`, 'error');
+            } finally {
+                document.getElementById('predictBtn').disabled = false;
+            }
+        }
+
+        function displayResults(result) {
+            const resultSection = document.getElementById('resultSection');
+            const categoryDiv = document.getElementById('categoryResults');
+            const imagesDiv = document.getElementById('resultImages');
+
+            resultSection.style.display = 'block';
+
+            // Show categories
+            categoryDiv.innerHTML = '<h3>Detected categories:</h3>';
+            result.category_pred.forEach(cat => {
+                categoryDiv.innerHTML += `<span class="category-badge">${cat}</span>`;
+            });
+
+            // Show masks
+            imagesDiv.innerHTML = '';
+            result.masks.forEach((maskBase64, index) => {
+                const box = document.createElement('div');
+                box.className = 'image-box';
+                
+                const img = document.createElement('img');
+                img.src = 'data:image/png;base64,' + maskBase64;
+                img.alt = `Mask ${index + 1}`;
+                
+                box.appendChild(img);
+                box.innerHTML += `<p>Mask ${index + 1}</p>`;
+                imagesDiv.appendChild(box);
+            });
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusDiv');
+            statusDiv.innerHTML = `<div class="status ${type}">${message}</div>`;
+            setTimeout(() => {
+                if (type !== 'info') {
+                    statusDiv.innerHTML = '';
+                }
+            }, 5000);
+        }
+
+        function reset() {
+            currentImage = null;
+            imageFile = null;
+            points = [];
+            document.getElementById('fileInput').value = '';
+            document.getElementById('originalImageSection').style.display = 'none';
+            document.getElementById('promptSection').style.display = 'none';
+            document.getElementById('buttonGroup').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('statusDiv').innerHTML = '';
+            document.getElementById('bboxX1').value = '';
+            document.getElementById('bboxY1').value = '';
+            document.getElementById('bboxX2').value = '';
+            document.getElementById('bboxY2').value = '';
+            document.getElementById('textPrompt').value = '';
+        }
+
+        // Check server status on page load
+        window.onload = async function() {
+            try {
+                const response = await fetch(`${API_URL}/health`);
+                if (response.ok) {
+                    const data = await response.json();
+                    showStatus(`✓ Server connected (${data.device})`, 'success');
+                }
+            } catch (error) {
+                showStatus('⚠ Unable to connect to the server. Please ensure it is running.', 'error');
+            }
+        };
+    </script>
+</body>
+</html>
