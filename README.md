@@ -1,23 +1,16 @@
 
-<div align="left" markdown="1">
-<div style="display:flex;align-items:center;gap:16px;">
-  <img src="./assets/logo.jpg" alt="MedSAM-Agent logo" width="88" height="88" style="border-radius:8px;"/>
-  <div>
-    <h1 style="margin:0;"><strong>MedSAM-Agent</strong>: Empowering Interactive Medical Image Segmentation with Multi-turn Agentic Reinforcement Learning</h1>
-  </div>
-</div>
-
-</div>
-[🤖 **Model**](#) | [**🤗 Dataset**](#) | [**📖 Paper**](#)
-
+# MedSAM-Agent: Empowering Interactive Medical Image Segmentation with Multi-turn Agentic Reinforcement Learning
+[🤖 **Model**](https://huggingface.co/Saint-lsy/MedSAM-Agent-Qwen3-VL-8B-MedSAM2) | [**🤗 Dataset**](#) | [**📖 Paper**](#)
+<p align="center">
+  <img src="./assets/logo.jpg" alt="" width="120" height="140">
+</p>
 Shengyuan Liu<sup>1</sup> &emsp; Liuxin Bao<sup>1</sup> &emsp;
 Qi Yang<sup>2,3</sup> &emsp; Wanting Geng<sup>2,4</sup> &emsp;
 Boyun Zheng<sup>1</sup> &emsp; Chenxin Li<sup>1</sup> &emsp; 
 Wenting Chen<sup>5</sup> Houwen Peng<sup>2✉</sup> 
 Yixuan Yuan<sup>1✉</sup>
 
-<sup>1</sup>Chinese University of Hong Kong &emsp; <sup>2</sup>Hunyuan Group, Tencent&emsp; <sup>3</sup>Institute of Automation, the Chinese Academy of Sciences &emsp;
-<sup>4</sup>Dalian University of Technology &emsp; <sup>5</sup>Stanford University&emsp;
+<sup>1</sup>Chinese University of Hong Kong &emsp; <sup>2</sup>Hunyuan Group, Tencent&emsp; <sup>3</sup>Institute of Automation, the Chinese Academy of Sciences &emsp;<sup>4</sup>Dalian University of Technology &emsp; <sup>5</sup>Stanford University&emsp;
 
 <sup>✉</sup> Corresponding Author. 
 
@@ -27,8 +20,9 @@ In this work, we propose MedSAM-Agent, a framework that reformulates interactive
 ![Main](assets/main.gif)
 
 ### ✨ Todo List
-- [x] Release the model and dataset for MedSAM-Agent.
-- [02/2026] Release the paper and base code for MedSAM-Agent.
+- [] Release the SFT and RL dataset for MedSAM-Agent.
+- [] Release the code of trajectory generation.
+- [x] Release the paper, model and base code for MedSAM-Agent.
 
 ## Environment Setup
 * We use python 3.11/CUDA 12.9/torch 2.8.0 for implementation.
@@ -55,12 +49,16 @@ git clone https://github.com/facebookresearch/sam2.git
 cd sam2
 pip install -e .
 ```
+### Dataset Preparation
+In this repo, our dataset is based on [BioMedParse](https://huggingface.co/datasets/microsoft/BiomedParseData) and [UniBioMed](https://huggingface.co/datasets/Luffy503/UniBiomed). We evaluate our model on 6 modalities and 21 datasets. Details of dataset split can be found in our paper.
 
+We will release the SFT trajectory dataset and RL training dataset soon.
 ### Inference
 - **Single sample (one image):**
 Run the script in [infer/run_single_inference.py](infer/run_single_inference.py) with your paths:
      ```bash
-     python infer/run_single_inference.py \
+     cd infer
+     python run_single_inference.py \
        --img-path infer/demo/BTCV-0-106_CT_abdomen.png \
        --target-description "right kidney in abdomen CT" \
        --model-path /path/to/mllm_model \
@@ -70,7 +68,7 @@ Run the script in [infer/run_single_inference.py](infer/run_single_inference.py)
 
 - **Whole-dataset / multi-GPU:** Edit the variables at the top of [infer/run_batch_inference.sh](infer/run_batch_inference.sh): `MODEL_PATH` (local Qwen checkpoint or `gpt`), `SEG_MODEL` (`medsam`, `sam`, `imisnet`), segmentation checkpoints/configs, `DATA_ROOT`, `DATASETS`, `SPLIT`, GPU topology (`N_GPUS`, `PROCESSES_PER_GPU`).
      ```bash
-     bash infer/run_batch_inference.sh
+     bash run_batch_inference.sh
      ```
 
 ## RL Training
@@ -100,6 +98,9 @@ We support two segmentation backbones for RL training: MedSAM2 and IMISNet.
 Greatly appreciate the tremendous effort for the following projects!
 - [Verl](https://github.com/verl-project/verl)
 - [Llama-Factory](https://github.com/hiyouga/LlamaFactory)
+- [UniBioMed](https://github.com/Luffy03/UniBiomed)
+- [BioMedParse](https://github.com/microsoft/BiomedParse)
+- [SegAgent](https://github.com/aim-uofa/SegAgent)
 
 ## 📜Citation
 If you find this work helpful for your project, please consider citing our paper.
