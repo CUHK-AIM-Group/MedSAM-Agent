@@ -4,7 +4,7 @@
 <p align="center">
   <img src="./assets/logo.png" alt="" width="120" height="140">
 </p>
-Shengyuan Liu<sup>1</sup> &emsp; Liuxin Bao<sup>1</sup> &emsp;
+<!-- Shengyuan Liu<sup>1</sup> &emsp; Liuxin Bao<sup>1</sup> &emsp;
 Qi Yang<sup>2,3</sup> &emsp; Wanting Geng<sup>2,4</sup> &emsp;
 Boyun Zheng<sup>1</sup> &emsp; Chenxin Li<sup>1</sup> &emsp; 
 Wenting Chen<sup>5</sup> Houwen Peng<sup>2✉</sup> 
@@ -12,7 +12,7 @@ Yixuan Yuan<sup>1✉</sup>
 
 <sup>1</sup>Chinese University of Hong Kong &emsp; <sup>2</sup>Hunyuan Group, Tencent&emsp; <sup>3</sup>Institute of Automation, the Chinese Academy of Sciences &emsp;<sup>4</sup>Dalian University of Technology &emsp; <sup>5</sup>Stanford University&emsp;
 
-<sup>✉</sup> Corresponding Author. 
+<sup>✉</sup> Corresponding Author.  -->
 
 ## 🚀Overview
 In this work, we propose MedSAM-Agent, a framework that reformulates interactive segmentation as a multi-step autonomous decision-making process. First, we introduce a hybrid prompting strategy for expert-curated trajectory generation, enabling the model to internalize human-like decision heuristics and adaptive refinement strategies. Furthermore, we develop a two-stage training pipeline that integrates multi-turn, end-to-end outcome verification with a clinical-fidelity process reward design to promote interaction parsimony and decision efficiency. 
