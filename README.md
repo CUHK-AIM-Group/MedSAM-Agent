@@ -1,6 +1,6 @@
 
 # MedSAM-Agent: Empowering Interactive Medical Image Segmentation with Multi-turn Agentic Reinforcement Learning
-[🤖 **Model**](https://huggingface.co/Saint-lsy/MedSAM-Agent-Qwen3-VL-8B-MedSAM2) | [**🤗 Dataset**](#) | [**📖 Paper**](#)
+[🤖 **Model**](https://huggingface.co/Saint-lsy/MedSAM-Agent-Qwen3-VL-8B-MedSAM2) | [**🤗 Dataset**](#) | [**📖 Paper**](https://arxiv.org/abs/2602.03320)
 <p align="center">
   <img src="./assets/logo.png" alt="" width="120" height="140">
 </p>
@@ -116,6 +116,14 @@ Greatly appreciate the tremendous effort for the following projects!
 ## 📜Citation
 If you find this work helpful for your project, please consider citing our paper.
 ```
-
+@misc{liu2026medsamagentempoweringinteractivemedical,
+      title={MedSAM-Agent: Empowering Interactive Medical Image Segmentation with Multi-turn Agentic Reinforcement Learning}, 
+      author={Shengyuan Liu and Liuxin Bao and Qi Yang and Wanting Geng and Boyun Zheng and Chenxin Li and Wenting Chen and Houwen Peng and Yixuan Yuan},
+      year={2026},
+      eprint={2602.03320},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2602.03320}, 
+}
 ```
 
