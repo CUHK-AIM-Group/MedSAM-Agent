@@ -77,7 +77,9 @@ bash run_batch_inference.sh
 
 ### Environment Setup
 Please follow the instructions in [RL-verl/README.md](RL-verl/README.md) to set up the Verl environment.
-Notice: the Sglang 
+
+Notice: the version of Sglang==0.5.4
+
 We support two segmentation backbones for RL training: MedSAM2 and IMISNet. 
 
 ### API Server (segmentation)
